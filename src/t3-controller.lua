@@ -4,11 +4,11 @@ local event = require("event")
 local stateMachineLib = require("lib.state-machine-lib")
 local componentDiscoverLib = require("lib.component-discover-lib")
 local gtSensorParserLib = require("lib.gt-sensor-parser")
+local controller = require("controller")
 
----@class T3ControllerConfig
+---@class T3ControllerConfig: Controller
 ---@field transposerAddress string
-
-local t3controller = {}
+local t3controller = controller:new("multimachine.purificationunitflocculator")
 
 ---Crate new T3Controller object from config
 ---@param config T3ControllerConfig
@@ -22,7 +22,7 @@ end
 function t3controller:new(transposerAddress)
 
   ---@class T3Controller
-  local obj = {}
+  local obj = controller:new("multimachine.purificationunitflocculator").
 
   obj.transposerProxy = nil
   obj.controllerProxy = nil
@@ -36,7 +36,7 @@ function t3controller:new(transposerAddress)
 
   ---Init T3Controller
   function obj:init()
-    self:findMachineProxy()
+    -- self:findMachineProxy()
     self:findTransposerFluid(self.transposerProxy, "polyaluminiumchloride")
 
     self.stateMachine.states.idle = self.stateMachine:createState("Idle")
@@ -94,17 +94,17 @@ function t3controller:new(transposerAddress)
     self.stateMachine:setState(self.stateMachine.states.idle)
   end
 
-  ---Find controller proxy
-  function obj:findMachineProxy()
-    self.controllerProxy = componentDiscoverLib.discoverGtMachine("multimachine.purificationunitflocculator")
+  -- ---Find controller proxy
+  -- function obj:findMachineProxy()
+  --   self.controllerProxy = componentDiscoverLib.discoverGtMachine("multimachine.purificationunitflocculator")
 
-    if self.controllerProxy == nil then
-      error("[T3] Flocculation Purification Unit not found")
-    end
+  --   if self.controllerProxy == nil then
+  --     error("[T3] Flocculation Purification Unit not found")
+  --   end
 
-    self.transposerProxy = componentDiscoverLib.discoverProxy(transposerAddress, "[T3] Transposer", "transposer")
-    self.gtSensorParser = gtSensorParserLib:new(self.controllerProxy)
-  end
+  --   self.transposerProxy = componentDiscoverLib.discoverProxy(transposerAddress, "[T3] Transposer", "transposer")
+  --   self.gtSensorParser = gtSensorParserLib:new(self.controllerProxy)
+  -- end
 
   ---Find side of transposer with fluid
   ---@param proxy transposer
@@ -127,26 +127,31 @@ function t3controller:new(transposerAddress)
     self.stateMachine:update()
   end
 
-  ---Get current state
-  ---@return string
-  function obj:getState()
-    if self.controllerProxy.isWorkAllowed() == false then
-      return "Controller disabled"
-    end
+  -- ---Get current state
+  -- ---@return string
+  -- function obj:getState()
+  --   if self.controllerProxy.isWorkAllowed() == false then
+  --     return "Disabled"
+  --   end
 
-    if self.controllerProxy.hasWork() == false then
-      return "Wait cycle"
-    end
+  --   if self.controllerProxy.hasWork() == false then
+  --     return "Waiting"
+  --   end
 
-    local state = self.stateMachine.currentState and self.stateMachine.currentState.name or "nil"
-    local successChange = self.gtSensorParser:getNumber(2, "Success chance:")
+  --   return self.stateMachine.currentState and self.stateMachine.currentState.name or "nil"
+  -- end
 
-    if successChange == nil then
-      successChange = 0
-    end
+  -- --Get current success chance
+  -- --@return number
+  -- function obj:getSuccess()
+  --   local successChange = self.gtSensorParser:getNumber(2, "Success chance:")
 
-    return "State: ["..state.."] Success: ["..successChange.."%]"
-  end
+  --   if successChange == nil then
+  --     successChange = 0
+  --   end
+
+  --   return successChange
+  -- end
 
   setmetatable(obj, self)
   self.__index = self

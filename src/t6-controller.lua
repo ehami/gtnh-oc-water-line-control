@@ -194,11 +194,11 @@ function t6controller:new(transposerAddress)
   ---@return string
   function obj:getState()
     if self.controllerProxy.isWorkAllowed() == false then
-      return "Controller disabled"
+      return "Disabled"
     end
 
     if self.controllerProxy.hasWork() == false then
-      return "Wait cycle"
+      return "Waiting"
     end
 
     local state = self.stateMachine.currentState and self.stateMachine.currentState.name or "nil"
@@ -208,7 +208,7 @@ function t6controller:new(transposerAddress)
       successChange = 0
     end
 
-    return "State: ["..state.."] Success: ["..successChange.."%]"
+    return "State: "..state.." Success: "..successChange.."%"
   end
 
   setmetatable(obj, self)

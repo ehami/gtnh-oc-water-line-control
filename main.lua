@@ -32,17 +32,17 @@ local mainTemplate = {
     logsScrollList = scrollList:new("logsScrollList", "logs", keyboard.keys.up, keyboard.keys.down)
   },
   lines = {
-    "Line State: $lineState$",
+    "Line State: $lineState$ | (Q)uit (Up)/(Down) Arrow",
+    "T_: Quantity / Requested | (Success) - State",
+    "T1: $t1waterLevel$ | ($t1success) - $t1state$",
+    "T2: $t2waterLevel$ | ($t2success) - $t2state$",
+    "T3: $t3waterLevel$ | ($t3success) - $t3state$",
+    "T4: $t4waterLevel$ | ($t4success) - $t4state$",
+    "T5: $t5waterLevel$ | ($t5success) - $t5state$",
+    "T6: $t6waterLevel$ | ($t6success) - $t6state$",
+    "T7: $t7waterLevel$ | ($t7success) - $t7state$",
+    "T8: $t8waterLevel$ | ($t8success) - $t8state$",
     "",
-    "T3: $t3state$",
-    "T4: $t4state$",
-    "T5: $t5state$",
-    "T6: $t6state$",
-    "T7: $t7state$",
-    "T8: $t8state$",
-    "",
-    "#logsScrollList#",
-    "#logsScrollList#",
     "#logsScrollList#",
     "#logsScrollList#",
     "#logsScrollList#",
@@ -54,13 +54,37 @@ local mainTemplate = {
   }
 }
 
-local controllersStates = {
+local controllerStates = {
+  ["t1"] = "Placeholder",
+  ["t2"] = "Placeholder",
   ["t3"] = config.controllers.t3.enable and "Loading" or "Unused",
   ["t4"] = config.controllers.t4.enable and "Loading" or "Unused",
   ["t5"] = config.controllers.t5.enable and "Loading" or "Unused",
   ["t6"] = config.controllers.t6.enable and "Loading" or "Unused",
   ["t7"] = config.controllers.t7.enable and "Loading" or "Unused",
   ["t8"] = config.controllers.t8.enable and "Loading" or "Unused",
+}
+
+local controllerSuccesses = {
+  ["t1"] = 0,
+  ["t2"] = 0,
+  ["t3"] = 0,
+  ["t4"] = 0,
+  ["t5"] = 0,
+  ["t6"] = 0,
+  ["t7"] = 0,
+  ["t8"] = 0,
+}
+
+local waterLevels = {
+  ["t1"] = 10000,
+  ["t2"] = 10000,
+  ["t3"] = 10000,
+  ["t4"] = 10000,
+  ["t5"] = 10000,
+  ["t6"] = 10000,
+  ["t7"] = 10000,
+  ["t8"] = 10000
 }
 
 local function init()
@@ -91,7 +115,8 @@ local function loop()
 
       if config.controllers[key].enable then
         config.controllers[key].controller:loop()
-        controllersStates[key] = config.controllers[key].controller:getState()
+        controllerStates[key] = config.controllers[key].controller:getState()
+        controllerSuccesses["t3"] = config.controllers["t3"].controller:getSuccess()
       end
 
       os.sleep(0.1)
@@ -104,12 +129,23 @@ end
 local function guiLoop()
   gui:render({
     lineState = config.lineController:getState(),
-    t3state = controllersStates["t3"],
-    t4state = controllersStates["t4"],
-    t5state = controllersStates["t5"],
-    t6state = controllersStates["t6"],
-    t7state = controllersStates["t7"],
-    t8state = controllersStates["t8"],
+    t1state = controllerStates["t1"],
+    t2state = controllerStates["t2"],
+    t3state = controllerStates["t3"],
+    t4state = controllerStates["t4"],
+    t5state = controllerStates["t5"],
+    t6state = controllerStates["t6"],
+    t7state = controllerStates["t7"],
+    t8state = controllerStates["t8"],
+    t1waterLevel = string.format("%8d / %8d kL", (waterLevels["t1"]/1000), config.waterThresholds.t1/1000),
+    t2waterLevel = string.format("%8d / %8d kL", (waterLevels["t2"]/1000), config.waterThresholds.t2/1000),
+    t3waterLevel = string.format("%8d / %8d kL", (waterLevels["t3"]/1000), config.waterThresholds.t3/1000),
+    t4waterLevel = string.format("%8d / %8d kL", (waterLevels["t4"]/1000), config.waterThresholds.t4/1000),
+    t5waterLevel = string.format("%8d / %8d kL", (waterLevels["t5"]/1000), config.waterThresholds.t5/1000),
+    t6waterLevel = string.format("%8d / %8d kL", (waterLevels["t6"]/1000), config.waterThresholds.t6/1000),
+    t7waterLevel = string.format("%8d / %8d kL", (waterLevels["t7"]/1000), config.waterThresholds.t7/1000),
+    t8waterLevel = string.format("%8d / %8d kL", (waterLevels["t8"]/1000), config.waterThresholds.t8/1000),
+
     logs = config.logger.handlers[3]["logs"].list
   })
 end
