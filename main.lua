@@ -33,15 +33,15 @@ local mainTemplate = {
   },
   lines = {
     "Line State: $lineState$ | (Q)uit (Up)/(Down) Arrow",
-    "T_: Quantity / Requested | (Success) - State",
-    "T1: $t1waterLevel$ | ($t1success) - $t1state$",
-    "T2: $t2waterLevel$ | ($t2success) - $t2state$",
-    "T3: $t3waterLevel$ | ($t3success) - $t3state$",
-    "T4: $t4waterLevel$ | ($t4success) - $t4state$",
-    "T5: $t5waterLevel$ | ($t5success) - $t5state$",
-    "T6: $t6waterLevel$ | ($t6success) - $t6state$",
-    "T7: $t7waterLevel$ | ($t7success) - $t7state$",
-    "T8: $t8waterLevel$ | ($t8success) - $t8state$",
+    "T_: Quantity /   Requested | (Success %) - State",
+    "T1: $t1waterLevel$ | ($t1success$) - $t1state$",
+    "T2: $t2waterLevel$ | ($t2success$) - $t2state$",
+    "T3: $t3waterLevel$ | ($t3success$) - $t3state$",
+    "T4: $t4waterLevel$ | ($t4success$) - $t4state$",
+    "T5: $t5waterLevel$ | ($t5success$) - $t5state$",
+    "T6: $t6waterLevel$ | ($t6success$) - $t6state$",
+    "T7: $t7waterLevel$ | ($t7success$) - $t7state$",
+    "T8: $t8waterLevel$ | ($t8success$) - $t8state$",
     "",
     "#logsScrollList#",
     "#logsScrollList#",
@@ -100,6 +100,7 @@ local function initControllers()
 
     if config.controllers[key].enable then
       config.controllers[key].controller:init()
+      config.controllers[key].metaController:init()
     end
   end
 end
@@ -115,8 +116,9 @@ local function loop()
 
       if config.controllers[key].enable then
         config.controllers[key].controller:loop()
-        controllerStates[key] = config.controllers[key].controller:getState()
-        controllerSuccesses["t3"] = config.controllers["t3"].controller:getSuccess()
+        config.controllers[key].metaController:loop()
+        controllerStates[key] = config.controllers[key].metaController:getState()
+        controllerSuccesses[key] = config.controllers[key].metaController:getSuccess()
       end
 
       os.sleep(0.1)
@@ -137,6 +139,14 @@ local function guiLoop()
     t6state = controllerStates["t6"],
     t7state = controllerStates["t7"],
     t8state = controllerStates["t8"],
+    t1success = controllerSuccesses["t1"],
+    t2success = controllerSuccesses["t2"],
+    t3success = controllerSuccesses["t3"],
+    t4success = controllerSuccesses["t4"],
+    t5success = controllerSuccesses["t5"],
+    t6success = controllerSuccesses["t6"],
+    t7success = controllerSuccesses["t7"],
+    t8success = controllerSuccesses["t8"],
     t1waterLevel = string.format("%8d / %8d kL", (waterLevels["t1"]/1000), config.waterThresholds.t1/1000),
     t2waterLevel = string.format("%8d / %8d kL", (waterLevels["t2"]/1000), config.waterThresholds.t2/1000),
     t3waterLevel = string.format("%8d / %8d kL", (waterLevels["t3"]/1000), config.waterThresholds.t3/1000),

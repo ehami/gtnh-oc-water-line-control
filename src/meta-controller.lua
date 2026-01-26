@@ -1,17 +1,14 @@
 local stateMachineLib = require("lib.state-machine-lib")
-local gtSensorParserLib = require("lib.gt-sensor-parser")
 local componentDiscoverLib = require("lib.component-discover-lib")
+local gtSensorParserLib = require("lib.gt-sensor-parser")
 
----@class ControllerConfig
+local metaController = {}
 
-local controller = {}
-
-
----Create new T3Controller object
+---Create new MetaController object
 ---@param machineType string
-function controller:new(machineType)
+function metaController:new(machineType)
 
-  ---@class Controller
+  ---@class MetaController
   local obj = {}
 
   obj.controllerProxy = nil
@@ -29,12 +26,18 @@ function controller:new(machineType)
     self.controllerProxy = componentDiscoverLib.discoverGtMachine(machineType)
 
     if self.controllerProxy == nil then
-      error(machineType.."' not found")
+      error(machineType.." not found")
     end
+
+    self.gtSensorParser = gtSensorParserLib:new(self.controllerProxy)
   end
 
   ---Loop
   function obj:loop()
+
+    if self.gtSensorParser == nil or self.controllerProxy == nil then
+      return
+    end
     self.gtSensorParser:getInformation()
     self.stateMachine:update()
   end
@@ -42,6 +45,10 @@ function controller:new(machineType)
   ---Get current state
   ---@return string
   function obj:getState()
+    if self.controllerProxy == nil then
+      return "Error"
+    end
+
     if self.controllerProxy.isWorkAllowed() == false then
       return "Disabled"
     end
@@ -56,6 +63,10 @@ function controller:new(machineType)
   ---Get current success chance
   ---@return number
   function obj:getSuccess()
+    if self.gtSensorParser == nil then
+      return -1
+    end
+
     local successChange = self.gtSensorParser:getNumber(2, "Success chance:")
 
     if successChange == nil then
@@ -70,4 +81,4 @@ function controller:new(machineType)
   return obj
 end
 
-return controller
+return metaController
