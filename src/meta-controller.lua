@@ -17,7 +17,7 @@ function metaController:new(machineType)
   obj.gtSensorParser = nil
 
   ---Init Controller
-  function obj:init()
+  function obj:initMeta()
     self:findMachineProxy()
   end
 

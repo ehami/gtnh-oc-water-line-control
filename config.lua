@@ -5,6 +5,7 @@ local scrollListLoggerHandler = require("lib.logger-handler.scroll-list-logger-h
 
 local lineControllerLib = require("src.line-controller")
 
+local t1controllerLib = require("src.t1-controller")
 local t3controllerLib = require("src.t3-controller")
 local t4controllerLib = require("src.t4-controller")
 local t5controllerLib = require("src.t5-controller")
@@ -52,8 +53,18 @@ local config = {
 
 
   controllers = {
+    t1 = { -- Controller for T1 Clarified Water (Grade 1)
+      enable = true, -- Enable module for T1 water
+      metaController = metaControllerLib:new("multimachine.purificationunitclarifier"),
+      controller = t1controllerLib(),
+    },
+    t2 = { -- Controller for T2 Clarified Water (Grade 2)
+      enable = false, -- Enable module for T2 water
+      metaController = metaControllerLib:new("multimachine.purificationunitozonation"),
+      controller = t1controllerLib(),
+    },
     t3 = { -- Controller for T3 Flocculated Water (Grade 3)
-      enable = true, -- Enable module for T3 water
+      enable = false, -- Enable module for T3 water
       metaController = metaControllerLib:new("multimachine.purificationunitflocculator"),
       controller = t3controllerLib:newFormConfig({
         transposerAddress = "0877c6dd-9421-4095-9dd1-8ecc1ae64cd9", -- Address of transposer which provide Polyaluminium Chloride

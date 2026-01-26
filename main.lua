@@ -55,7 +55,7 @@ local mainTemplate = {
 }
 
 local controllerStates = {
-  ["t1"] = "Placeholder",
+  ["t1"] = config.controllers.t1.enable and "Loading" or "Unused",
   ["t2"] = "Placeholder",
   ["t3"] = config.controllers.t3.enable and "Loading" or "Unused",
   ["t4"] = config.controllers.t4.enable and "Loading" or "Unused",
@@ -95,12 +95,12 @@ local function initControllers()
   os.sleep(0.5)
   config.lineController:init()
 
-  for i = 3, 8, 1 do
+  for i = 1, 8, 1 do
     local key = "t"..i
 
     if config.controllers[key].enable then
-      config.controllers[key].controller:init()
-      config.controllers[key].metaController:init()
+      config.controllers[key].controller:gtInit()
+      -- config.controllers["t3"].controller:initMeta()
     end
   end
 end
@@ -111,14 +111,14 @@ local function loop()
   while true do
     config.lineController:loop()
 
-    for i = 3, 8, 1 do
+    for i = 1, 8, 1 do
       local key = "t"..i
 
       if config.controllers[key].enable then
         config.controllers[key].controller:loop()
-        config.controllers[key].metaController:loop()
-        controllerStates[key] = config.controllers[key].metaController:getState()
-        controllerSuccesses[key] = config.controllers[key].metaController:getSuccess()
+        -- config.controllers[key].metaController:loop()
+        controllerStates[key] = config.controllers[key].controller:getState()
+        controllerSuccesses[key] = config.controllers[key].controller:getSuccess()
       end
 
       os.sleep(0.1)
