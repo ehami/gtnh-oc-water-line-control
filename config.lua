@@ -5,7 +5,8 @@ local scrollListLoggerHandler = require("lib.logger-handler.scroll-list-logger-h
 
 local lineControllerLib = require("src.line-controller")
 
-local t1controllerLib = require("src.t1-controller")
+local T1Controller = require("src.t1-controller")
+local T2Controller = require("src.t2-controller")
 local t3controllerLib = require("src.t3-controller")
 local t4controllerLib = require("src.t4-controller")
 local t5controllerLib = require("src.t5-controller")
@@ -55,12 +56,12 @@ local config = {
     t1 = { -- Controller for T1 Clarified Water (Grade 1)
       enable = true, -- Enable module for T1 water
       -- metaController = metaControllerLib:new("multimachine.purificationunitclarifier"),
-      controller = t1controllerLib(),
+      controller = T1Controller({}),
     },
     t2 = { -- Controller for T2 Clarified Water (Grade 2)
-      enable = false, -- Enable module for T2 water
+      enable = true, -- Enable module for T2 water
       -- metaController = metaControllerLib:new("multimachine.purificationunitozonation"),
-      controller = t1controllerLib(),
+      controller = T2Controller({}),
     },
     t3 = { -- Controller for T3 Flocculated Water (Grade 3)
       enable = false, -- Enable module for T3 water

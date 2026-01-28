@@ -56,7 +56,7 @@ local mainTemplate = {
 
 local controllerStates = {
   ["t1"] = config.controllers.t1.enable and "Loading" or "Unused",
-  ["t2"] = "Placeholder",
+  ["t2"] = config.controllers.t2.enable and "Loading" or "Unused",
   ["t3"] = config.controllers.t3.enable and "Loading" or "Unused",
   ["t4"] = config.controllers.t4.enable and "Loading" or "Unused",
   ["t5"] = config.controllers.t5.enable and "Loading" or "Unused",
@@ -99,7 +99,7 @@ local function initControllers()
     local key = "t"..i
 
     if config.controllers[key].enable then
-      config.controllers["t1"].controller:gtInit()
+      config.controllers[key].controller:gtInit()
       -- config.controllers["t3"].controller:initMeta()
     end
   end
