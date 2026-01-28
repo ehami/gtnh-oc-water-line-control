@@ -99,7 +99,7 @@ local function initControllers()
     local key = "t"..i
 
     if config.controllers[key].enable then
-      config.controllers[key].controller:gtInit()
+      config.controllers["t1"].controller:gtInit()
       -- config.controllers["t3"].controller:initMeta()
     end
   end
