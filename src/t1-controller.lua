@@ -10,8 +10,9 @@ function T1Controller:_init()
 end
 
 --- @param config table
-function T1Controller:newFromConfig(config)
-    return self:_init()
+--- @return T1Controller
+function T1Controller:fromConfig(config)
+    return T1Controller()
 end
 
 return T1Controller

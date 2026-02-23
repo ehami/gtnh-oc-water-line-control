@@ -2,7 +2,7 @@ local Controller = require("src.controller")
 
 
 
---- @class T2Controller: Controller
+---@class T2Controller: Controller
 local T2Controller = Controller:createChild()
 
 function T2Controller:_init()
@@ -10,8 +10,9 @@ function T2Controller:_init()
 end
 
 --- @param config table
-function T2Controller:newFromConfig(config)
-    return self:_init()
+--- @return T2Controller
+function T2Controller:fromConfig(config)
+    return T2Controller()
 end
 
 return T2Controller

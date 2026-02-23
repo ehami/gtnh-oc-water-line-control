@@ -100,7 +100,7 @@ local function initControllers()
 
     if config.controllers[key].enable then
       config.controllers[key].controller:gtInit()
-      -- config.controllers["t3"].controller:initMeta()
+      config.controllers[key].controller:stateMachineInit()
     end
   end
 end
@@ -116,7 +116,6 @@ local function loop()
 
       if config.controllers[key].enable then
         config.controllers[key].controller:loop()
-        -- config.controllers[key].metaController:loop()
         controllerStates[key] = config.controllers[key].controller:getState()
         controllerSuccesses[key] = config.controllers[key].controller:getSuccess()
       end

@@ -17,51 +17,57 @@ setmetatable(Controller, {
   end,
 })
 
+-- Constructor for base Controller class
 --- @param machineType string
 --- @param machineFriendlyName string
 function Controller:_init(machineType, machineFriendlyName)
   self.machineType = machineType
   self.machineFriendlyName = machineFriendlyName
   self.stateMachine = stateMachineLib:new()
+
+  self.controllerProxy =  nil
 end
 
+-- Init GT libs. Should be called from subclasses if overriden.
 function Controller:gtInit()
-    self.controllerProxy = componentDiscoverLib.discoverGtMachine(self.machineType)
+  self.controllerProxy = componentDiscoverLib.discoverGtMachine(self.machineType)
 
-    if self.controllerProxy == nil then
-      error(self.machineType.." not found")
-    end
+  if self.controllerProxy == nil then
+    error(self.machineType.." not found")
+  end
 
-    self.gtSensorParser = gtSensorParserLib:new(self.controllerProxy)
-
-    self.stateMachine.states.idle = self.stateMachine:createState("Idle")
-    self.stateMachine.states.work = self.stateMachine:createState("Work")
-    self.stateMachine.states.waitEnd = self.stateMachine:createState("Wait End")
-    
-    self.stateMachine.states.idle.update = function()
-      if self.controllerProxy.hasWork() then
-        self.stateMachine:setState(self.stateMachine.states.work)
-      end
-    end
-
-    self.stateMachine.states.work.init = function()
-        self.stateMachine:setState(self.stateMachine.states.waitEnd)
-    end
-
-
-    event.listen(
-        "cycle_end", 
-        function ()
-            if self.stateMachine.currentState == self.stateMachine.states.waitEnd then
-                self.stateMachine:setState(self.stateMachine.states.idle)
-            end
-        end
-    )
-
-    self.stateMachine:setState(self.stateMachine.states.idle)
+  self.gtSensorParser = gtSensorParserLib:new(self.controllerProxy)
 end
 
----Loop
+-- Init and start state machine. Subclasses may omit a call to this parent class when overriding if they init and start the state machine on their own.
+function Controller:stateMachineInit()
+  self.stateMachine.states.idle = self.stateMachine:createState("Idle")
+  self.stateMachine.states.work = self.stateMachine:createState("Work")
+  self.stateMachine.states.waitEnd = self.stateMachine:createState("Wait End")
+  
+  self.stateMachine.states.idle.update = function()
+    if self.controllerProxy.hasWork() then
+      self.stateMachine:setState(self.stateMachine.states.work)
+    end
+  end
+
+  self.stateMachine.states.work.init = function()
+      self.stateMachine:setState(self.stateMachine.states.waitEnd)
+  end
+
+  event.listen(
+      "cycle_end", 
+      function ()
+          if self.stateMachine.currentState == self.stateMachine.states.waitEnd then
+              self.stateMachine:setState(self.stateMachine.states.idle)
+          end
+      end
+  )
+
+  self.stateMachine:setState(self.stateMachine.states.idle)
+end
+
+-- Loop
 function Controller:loop()
 self.gtSensorParser:getInformation()
 self.stateMachine:update()
