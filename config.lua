@@ -8,7 +8,7 @@ local lineControllerLib = require("src.line-controller")
 local T1Controller = require("src.t1-controller")
 local T2Controller = require("src.t2-controller")
 local T3Controller = require("src.t3-controller")
-local t4controllerLib = require("src.t4-controller")
+local T4Controller = require("src.t4-controller")
 local t5controllerLib = require("src.t5-controller")
 local t6controllerLib = require("src.t6-controller")
 local t7controllerLib = require("src.t7-controller")
@@ -70,8 +70,8 @@ local config = {
     },
     
     t4 = { -- Controller for T4 pH Neutralized Water (Grade 4)
-      enable = false, -- Enable module for T4 water
-      controller = t4controllerLib:newFormConfig({
+      enable = true, -- Enable module for T4 water
+      controller = T4Controller:fromConfig({
         hydrochloricAcidTransposerAddress = "224ebf64-8bee-4874-aecb-a7ec7e620e8b", -- Address of transposer which provides Hydrochloric Acid
         sodiumHydroxideTransposerAddress = "ad8bacdb-f59a-44da-a108-2cd0b7571c8f" -- Address of transposer which provides Sodium Hydroxide Dust
       })
