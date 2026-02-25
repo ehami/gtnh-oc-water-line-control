@@ -8,7 +8,6 @@ local Controller = require("src.controller")
 ---@class T6ControllerConfig
 ---@field transposerAddress string
 
-
 ---@class T6Controller: Controller
 local T6Controller = Controller:createChild()
 
@@ -35,6 +34,8 @@ function T6Controller:gtInit()
 
   self.transposerProxy = componentDiscoverLib.discoverProxy(self.transposerAddress, "[T6] Transposer", "transposer")
 
+  
+  self:resetLenses()
   self:findTransposerItem(self.transposerProxy, {
     "Orundum Lens",
     "Amber Lens",
@@ -46,8 +47,6 @@ function T6Controller:gtInit()
     "Fluor-Buergerite Lens",
     "Dilithium Lens"
   })
-
-  self:resetLenses()
 end
 
 function T6Controller:stateMachineInit()
