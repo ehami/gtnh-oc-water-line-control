@@ -78,8 +78,8 @@ local config = {
     },
     
     t5 = { -- Controller for T5 Extreme-Temperature Treated Water (Grade 5)
-      enable = false, -- Enable module for T5 water
-      controller = t5controllerLib:newFormConfig({
+      enable = true, -- Enable module for T5 water
+      controller = t5controllerLib:fromConfig({
         plasmaTransposerAddress = "c62f2acc-5360-492a-b4f8-bb54b2443c42", -- Address of transposer which provides Helium Plasma
         coolantTransposerAddress = "407b4e48-cec9-477e-bf62-52c646dafc31" -- Address of transposer which provides Super Coolant
       }),

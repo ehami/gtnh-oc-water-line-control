@@ -2,7 +2,6 @@
 local sides = require("sides")
 local event = require("event")
 
-local stateMachineLib = require("lib.state-machine-lib")
 local componentDiscoverLib = require("lib.component-discover-lib")
 local gtSensorParserLib = require("lib.gt-sensor-parser")
 
