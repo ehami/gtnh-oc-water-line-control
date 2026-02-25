@@ -86,8 +86,8 @@ local config = {
     },
     
     t6 = { -- Controller for T6 Ultraviolet Treated Electrically Neutral Water (Grade 6)
-      enable = false, -- Enable module for T6 water
-      controller = t6controllerLib:newFormConfig({
+      enable = true, -- Enable module for T6 water
+      controller = t6controllerLib:fromConfig({
         transposerAddress = "47e85e04-504a-4879-96d4-dec16cb32825" -- Address of transposer which provides Lenses
       }),
     },
