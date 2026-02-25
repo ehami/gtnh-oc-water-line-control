@@ -103,8 +103,8 @@ local config = {
     },
     
     t8 = { -- Controller for T8 Subatomically Perfect Water (Grade 8)
-      enable = false, -- Enable module for T8 water
-      controller = t8controllerLib:newFormConfig({
+      enable = true, -- Enable module for T8 water
+      controller = t8controllerLib:fromConfig({
         maxQuarkCount = 4, -- Maximum number of each quark in the sub AE
         transposerAddress = "c8645157-d620-435a-8501-73934c5c4b3c", -- Address of transposer which provides Quarks
         subMeInterfaceAddress = "303d28ac-34b5-41a1-ba07-a702afcc09fc" -- Address of me interface which connected to sub AE
