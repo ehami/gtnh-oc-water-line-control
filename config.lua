@@ -93,8 +93,8 @@ local config = {
     },
     
     t7 = { -- Controller for T7 Degassed Decontaminant-Free Water (Grade 7)
-      enable = false, -- Enable module for T7 water
-      controller = t7controllerLib:newFormConfig({
+      enable = true, -- Enable module for T7 water
+      controller = t7controllerLib:fromConfig({
         inertGasTransposerAddress = "ca439a44-802f-4cda-8b3d-764ca293a8bf", -- Address of transposer which provides Inert Gas
         superConductorTransposerAddress = "bb4505d0-9b03-4569-a7e9-68db134850b0", -- Address of transposer which provides Super Conductor
         netroniumTransposerAddress = "d4ed1081-a0ff-404e-a3d9-e754c1a575fd", -- Address of transposer which provides Molten Neutronium
