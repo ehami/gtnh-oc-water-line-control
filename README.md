@@ -15,10 +15,12 @@
 
 ## Information
 
-Program is designed to automate the water line from T3 to T8 water. 
+Program is designed to automate the water line from T1 to T8 water. 
 Program is modular, you can choose which water types you want to automate.
 It is also possible to send messages to Discord about out of service situations.
 And there is also the possibility of auto update at startup.
+The program can be configured to self-regulate and optionally operate as a single-threaded water line if desired 
+(this is the main improvement over the base Navatusein/GTNH-OC-Water-Line-Control).
 
 #### Controls
 
@@ -56,14 +58,17 @@ Install the basic Open OS on your computer.
 Then run the command to start the installer.
 
 ```shell
-pastebin run ESUAMAGx
+wget -f https://raw.githubusercontent.com/ehami/GTNH-OC-Installer/main/installer.lua && installer
 ``` 
 
 Or
 
+(NOTE: this points to the parent repo. use the wget command above for the modified one)
 ```shell
-wget -f https://raw.githubusercontent.com/Navatusein/GTNH-OC-Installer/main/installer.lua && installer
+pastebin run ESUAMAGx
 ``` 
+
+Or
 
 Then select the Water Line Control program in the installer.
 If you wish you can add the program to auto download, for manual start write a command.
@@ -98,6 +103,55 @@ The program interface is configured for a 3x2 monitor.
 > There's a save of the world with a setup of water line. Game version 2.7.3
 > [Save](https://github.com/Navatusein/GTNH-OC-Water-Line-Control/raw/main/water-line-world.zip)
 
+
+### [QC] Quantity Controller
+
+#### Components
+
+To build a setup, you will need:
+- ME Interface on your main or fluid network: 1
+- Adapter: 1
+
+#### Description
+
+This module allows autostocking based on the stored fluid levels. There are multiple control modes:
+- `"disabled"` - No quantity control. Tier controllers are unmanaged and run continuously.
+- `"multiThread"` - Basic quantity control. All tier controllers with a water level below their threshold will run. 
+- `"singleThread"`
+  - Based on the wiki's [Single Threaded Waterline](https://wiki.gtnewhorizons.com/wiki/Water_Line#Singlethreaded_Waterline). 
+  - This only runs one tier at once, allowing 100% utilization of your power supply and increased parallels (which is especially relevant for generating Stabilised Baryonic Matter, which is based on T8's parallel count). 
+  - This runs the lowest tier that is below its threshold.
+- `"singleThreadBalancing"` - Similar to `"singleThread"`, but will attempt to balance stored quantities by tier. To ensure parallels are not wasted, there is a minumum quantity value that should be set to the largest water quantity used in a single waterline cycle (ie, max parallels * 1000).
+
+TODO: Currently, the quantity controller does not maintain a fluid level for Stabilised Baryonic Matter. This would be a useful modification.
+
+#### T1 Config part
+
+```Lua
+config.quantityController = QuantityController:fromConfig({
+  baseConfig = config,
+  controlMode = "singleThreadBalancing", -- "disabled", "multiThread", "singleThread", "singleThreadBalancing"
+  meInterfaceAddress = "a1b2da71-b742-466f-86ce-dc8614756c1d",  -- Address of the ME Interface on the main/fluid storage network that should be monitored
+  minQty = 32000,  -- The minimum quantity that will allow higher tiers to run. Set this to the highest amount used in a single cycle (which is based on the configured parallels). Only applies for controlMode="singleThreadBalancing". 
+  waterThresholds = {
+    -- Amount of each water to keep stocked (in L). Ignored if controlMode = "disabled"
+    64000, -- T1
+    64000, -- T2
+    64000, -- T3
+    64000, -- T4
+    64000, -- T5
+    64000, -- T6
+    64000, -- T7
+    64000  -- T8
+  },
+})
+```
+
+#### Example setup
+
+To Be Completed...
+
+
 ### Water Purification Plant
 
 #### Components
@@ -118,6 +172,61 @@ The controller is connected via MFU to keep it accessible.
 #### Example setup
 
 ![Water Purification Plant](/docs/water-purification-plant.png)
+
+### [T1] Clarified Water (Grade 1)
+#### Components
+
+To build a setup, you will need:
+- Adapter: 1
+- MFU: 1
+
+#### Description
+
+To use the module for t1 water in the `config.lua`
+file you need to enable the module by changing `enable = false` to `enable = true`
+
+The controller is connected via MFU to keep it accessible.
+
+#### T1 Config part
+
+```Lua
+t1 = { -- Controller for T1 Filtered Water (Grade 1)
+  enable = true, -- Enable module for T1 water
+  controller = T1Controller:fromConfig({})
+},
+```
+
+#### Example setup
+
+To Be Completed...
+
+
+### [T2] Ozonated Water (Grade 2)
+#### Components
+
+To build a setup, you will need:
+- Adapter: 1
+- MFU: 1
+
+#### Description
+
+To use the module for t1 water in the `config.lua`
+file you need to enable the module by changing `enable = false` to `enable = true`
+
+The controller is connected via MFU to keep it accessible.
+
+#### T2 Config part
+
+```Lua
+t2 = { -- Controller for T2 Ozonated Water (Grade 2)
+  enable = true, -- Enable module for T2 water
+  controller = T2Controller:fromConfig({})
+},
+```
+
+#### Example setup
+
+To Be Completed...
 
 ### [T3] Flocculated Water (Grade 3)
 

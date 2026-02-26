@@ -10,7 +10,7 @@ local config = require("config")
 
 local version = require("version")
 
-local repository = "Navatusein/GTNH-OC-Water-Line-Control"
+local repository = "ehami/GTNH-OC-Water-Line-Control"
 local archiveName = "WaterLineControl"
 
 local program = programLib:new(config.logger, config.enableAutoUpdate, version, repository, archiveName)
@@ -76,17 +76,6 @@ local controllerSuccesses = {
   ["t8"] = 0,
 }
 
-local waterLevels = {
-  ["t1"] = 10000,
-  ["t2"] = 10000,
-  ["t3"] = 10000,
-  ["t4"] = 10000,
-  ["t5"] = 10000,
-  ["t6"] = 10000,
-  ["t7"] = 10000,
-  ["t8"] = 10000
-}
-
 local function init()
   gui:setTemplate(mainTemplate)
 end
@@ -94,6 +83,7 @@ end
 local function initControllers()
   os.sleep(0.5)
   config.lineController:init()
+  config.quantityController:gtInit()
 
   for i = 1, 8, 1 do
     local key = "t"..i
@@ -109,6 +99,7 @@ local function loop()
   initControllers()
 
   while true do
+    config.quantityController:loop()
     config.lineController:loop()
 
     for i = 1, 8, 1 do
@@ -146,14 +137,14 @@ local function guiLoop()
     t6success = controllerSuccesses["t6"],
     t7success = controllerSuccesses["t7"],
     t8success = controllerSuccesses["t8"],
-    t1waterLevel = string.format("%8d / %8d kL", (waterLevels["t1"]/1000), config.waterThresholds.t1/1000),
-    t2waterLevel = string.format("%8d / %8d kL", (waterLevels["t2"]/1000), config.waterThresholds.t2/1000),
-    t3waterLevel = string.format("%8d / %8d kL", (waterLevels["t3"]/1000), config.waterThresholds.t3/1000),
-    t4waterLevel = string.format("%8d / %8d kL", (waterLevels["t4"]/1000), config.waterThresholds.t4/1000),
-    t5waterLevel = string.format("%8d / %8d kL", (waterLevels["t5"]/1000), config.waterThresholds.t5/1000),
-    t6waterLevel = string.format("%8d / %8d kL", (waterLevels["t6"]/1000), config.waterThresholds.t6/1000),
-    t7waterLevel = string.format("%8d / %8d kL", (waterLevels["t7"]/1000), config.waterThresholds.t7/1000),
-    t8waterLevel = string.format("%8d / %8d kL", (waterLevels["t8"]/1000), config.waterThresholds.t8/1000),
+    t1waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[1]/1000), config.quantityController.waterThresholds[1]/1000),
+    t2waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[2]/1000), config.quantityController.waterThresholds[2]/1000),
+    t3waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[3]/1000), config.quantityController.waterThresholds[3]/1000),
+    t4waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[4]/1000), config.quantityController.waterThresholds[4]/1000),
+    t5waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[5]/1000), config.quantityController.waterThresholds[5]/1000),
+    t6waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[6]/1000), config.quantityController.waterThresholds[6]/1000),
+    t7waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[7]/1000), config.quantityController.waterThresholds[7]/1000),
+    t8waterLevel = string.format("%8d / %8d kL", (config.quantityController.waterLevels[8]/1000), config.quantityController.waterThresholds[8]/1000),
 
     logs = config.logger.handlers[3]["logs"].list
   })

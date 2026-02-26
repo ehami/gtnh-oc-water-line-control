@@ -69,48 +69,49 @@ end
 
 -- Loop
 function Controller:loop()
-self.gtSensorParser:getInformation()
-self.stateMachine:update()
+  self.gtSensorParser:getInformation()
+  self.stateMachine:update()
 end
 
 -- Get current state
 ---@return string
 function Controller:getState()
-    if self.controllerProxy == nil then
-        return "Error"
-    end
+  if self.controllerProxy == nil then
+      return "Error"
+  end
 
-    if self.controllerProxy.isWorkAllowed() == false then
-        return "Disabled"
-    end
+  if self.controllerProxy.isWorkAllowed() == false then
+      return "Disabled"
+  end
 
-    if self.controllerProxy.hasWork() == false then
-        return "Wait cycle"
-    end
+  if self.controllerProxy.hasWork() == false then
+      return "Wait cycle"
+  end
 
-    return self.stateMachine.currentState and self.stateMachine.currentState.name or "nil"
+  return self.stateMachine.currentState and self.stateMachine.currentState.name or "nil"
 end
 
 -- Get current success chance
 ---@return number
 function Controller:getSuccess()
-    if self.gtSensorParser == nil then
-        return -2
-    end
+  if self.gtSensorParser == nil then
+      return 0
+  end
 
-    local successChance = self.gtSensorParser:getNumber(2, "Success chance:")
+  local successChance = self.gtSensorParser:getNumber(2, "Success chance:")
 
-    if successChance == nil then
-        successChance = -1
-    end
+  if successChance == nil then
+      successChance = 0
+  end
 
-    return successChance
+  return successChance
 end
 
 -- Enable/Disable Machine
 --- @param isEnabled boolean
 function Controller:setEnabled(isEnabled)
-    self.controllerProxy.setWorkAllowed(isEnabled)
+  -- event.push("log_debug", "Setting enable="..tostring(isEnabled).." "..self.machineFriendlyName)
+  self.controllerProxy.setWorkAllowed(isEnabled)
 end
 
 -- Based on http://lua-users.org/wiki/ObjectOrientationTutorial

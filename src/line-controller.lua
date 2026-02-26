@@ -8,7 +8,7 @@ local lineController = {}
 
 ---Crate new LineController object from config
 ---@return LineController
-function lineController:newFormConfig()
+function lineController:fromConfig()
   return self:new()
 end
 
@@ -39,13 +39,18 @@ function lineController:new()
   ---Loop
   function obj:loop()
     local workProgress = self.controllerProxy.getWorkProgress()
+    local workMaxProgress = self.controllerProxy.getWorkMaxProgress()
 
     if lastWorkProgress > workProgress or (self.controllerProxy.hasWork() == false and lastWorkProgress ~= 0) then
       event.push("cycle_end")
       lastWorkProgress = 0
     end
 
-    if self.controllerProxy.hasWork() then 
+    if workProgress >= (workMaxProgress - 20) then
+      event.push("cycle_pre_end")
+    end
+
+    if self.controllerProxy.hasWork() then
       lastWorkProgress = workProgress
     end
   end
