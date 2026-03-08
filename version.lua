@@ -1,6 +1,6 @@
 local versions = {
-  programVersion = "1.0.8",
-  configVersion = 1
+  programVersion = "2.0.0",
+  configVersion = 2
 }
 
 return versions

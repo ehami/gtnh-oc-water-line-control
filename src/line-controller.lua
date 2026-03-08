@@ -8,7 +8,7 @@ local lineController = {}
 
 ---Crate new LineController object from config
 ---@return LineController
-function lineController:newFormConfig()
+function lineController:fromConfig()
   return self:new()
 end
 
@@ -21,6 +21,7 @@ function lineController:new()
   obj.controllerProxy = nil
 
   local lastWorkProgress = 0
+  local hasPreEndRun = false
 
   ---Init LineController
   function obj:init()
@@ -39,13 +40,21 @@ function lineController:new()
   ---Loop
   function obj:loop()
     local workProgress = self.controllerProxy.getWorkProgress()
+    local workMaxProgress = self.controllerProxy.getWorkMaxProgress()
 
     if lastWorkProgress > workProgress or (self.controllerProxy.hasWork() == false and lastWorkProgress ~= 0) then
       event.push("cycle_end")
       lastWorkProgress = 0
+      hasPreEndRun = false
     end
 
-    if self.controllerProxy.hasWork() then 
+    if workProgress >= (workMaxProgress - 80) and workMaxProgress ~= 0 and not hasPreEndRun then
+      -- event.push("log_debug", string.format("lastWorkProgress %d, workMaxProgress %d, workProgress = %d", lastWorkProgress, workMaxProgress, workProgress))
+      hasPreEndRun = true
+      event.push("cycle_pre_end")
+    end
+
+    if self.controllerProxy.hasWork() then
       lastWorkProgress = workProgress
     end
   end
