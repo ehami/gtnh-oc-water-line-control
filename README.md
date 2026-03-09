@@ -261,7 +261,7 @@ t3 = { -- Controller for T3 Flocculated Water (Grade 3)
 ```
 
 #### Example setup
-
+NOTE: The input hatches must be above the transposer. The source tank/output hatch/dual interface may be on any other side.
 ![T3 Setup](/docs/t3-setup.png)
 
 ### [T4] pH Neutralized Water (Grade 4)
@@ -299,7 +299,8 @@ t4 = { -- Controller for T4 pH Neutralized Water (Grade 4)
 
 #### Example setup
 
-![T3 Setup](/docs/t4-setup.png)
+NOTE: The input hatches must be above the transposer. The source tank/output hatch/dual interface may be on any other side.
+![T4 Setup](/docs/t4-setup.png)
 
 ### [T5] Extreme-Temperature Treated Water (Grade 5)
 
@@ -335,6 +336,7 @@ t5 = { -- Controller for T5 Extreme-Temperature Treated Water (Grade 5)
 ```
 
 #### Example setup
+NOTE: The input hatch must be above the transposer. The source tank/output hatch/dual interface may be on any other side.
 
 ![T5 Setup](/docs/t5-setup.png)
 
@@ -417,7 +419,7 @@ t7 = { -- Controller for T7 Degassed Decontaminant-Free Water (Grade 7)
 ```
 
 #### Example setup
-
+NOTE: The input hatches must be above the transposer. The source tank/output hatch/dual interface may be on any other side.
 ![T7 Setup](/docs/t7-setup.png)
 
 ### [T8] Subatomically Perfect Water (Grade 8)
@@ -464,7 +466,7 @@ t8 = { -- Controller for T8 Subatomically Perfect Water (Grade 8)
 ```
 
 #### Example setup
-
+NOTE: The input bus must be above the transposer. The ME interface may be on any other side.
 ![T8 Setup 1](/docs/t8-setup-1.png)
 
 ![T8 Setup 2](/docs/t8-setup-2.png)
