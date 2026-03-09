@@ -41,6 +41,7 @@ function QuantityController:_init(controllers, controlMode, waterThresholds, meI
   self.waterThresholds = waterThresholds
   self.meInterfaceAddress = meInterfaceAddress
   self.minQty = minQty
+  self.isTierActive = {false, false, false, false, false, false, false, false}
 
   self.meInterfaceProxy = nil
 
@@ -56,7 +57,7 @@ function QuantityController:_init(controllers, controlMode, waterThresholds, meI
     "stablebaryonicmatter",
   }
 
-  self.waterLevels = {0 ,0, 0, 0, 0, 0, 0, 0, 0}
+  self.waterLevels = {0, 0, 0, 0, 0, 0, 0, 0, 0}
 end
 
 function QuantityController:gtInit()
@@ -76,16 +77,28 @@ function QuantityController:gtInit()
 end
 
 --- @param i integer
---- @return string
-local function tier(i)
+--- @return integer
+local function iTier(i)
   if i == 9 then
-    i = 8
+    return 8
   end
 
-  return "t"..i
+  return i
+end
+
+--- @param i integer
+--- @return string
+local function sTier(i)
+  return "t"..iTier(i)
 end
 
 function QuantityController:updateControllerEnablement()
+  local function clearActiveTiers()
+    for i = 1,8 do
+      self.isTierActive[iTier(i)] = (false)
+    end
+  end
+
   if self.controlMode == "disabled" then
     -- No-op
     return
@@ -94,14 +107,14 @@ function QuantityController:updateControllerEnablement()
   if self.controlMode == "multiThread" then
     -- Enable all tiers that are below their thresholds
     for i = 1,8 do
-      if self.controllers[tier(i)].enable then
+      if self.controllers[sTier(i)].enable then
         if i == 8 then
-          self.controllers[tier(i)].controller:setEnabled(
+          self.isTierActive[iTier(i)] = (
             self.waterLevels[i] < self.waterThresholds[i]
             or self.waterLevels[9] < self.waterThresholds[9]
           )
         else
-          self.controllers[tier(i)].controller:setEnabled(
+          self.isTierActive[iTier(i)] = (
             self.waterLevels[i] < self.waterThresholds[i]
           )
         end
@@ -111,15 +124,11 @@ function QuantityController:updateControllerEnablement()
 
   if  self.controlMode == "singleThread" then
     -- Enable the lowest tier that is below its threshold
-    for i = 1,8 do
-      if self.controllers[tier(i)].enable then
-        self.controllers[tier(i)].controller:setEnabled(false)
-      end
-    end
+    clearActiveTiers()
 
     for i = 1,9 do
-      if self.controllers[tier(i)].enable and self.waterLevels[i] < self.waterThresholds[i] then
-        self.controllers[tier(i)].controller:setEnabled(true)
+      if self.controllers[sTier(i)].enable and self.waterLevels[i] < self.waterThresholds[i] then
+        self.isTierActive[iTier(i)] = true
         break
       end
     end
@@ -127,16 +136,12 @@ function QuantityController:updateControllerEnablement()
 
   if self.controlMode == "singleThreadBalancing" then
     -- Enable the tier with the lowest water level (that's below its threshold). Lower tiers win ties. Do not bypass a tier if below minQty
-    for i = 1,8 do
-      if self.controllers[tier(i)].enable then
-        self.controllers[tier(i)].controller:setEnabled(false)
-      end
-    end
+    clearActiveTiers()
 
     local winningTier = -1
 
     for i = 1,9 do
-      if self.controllers[tier(i)].enable and self.waterLevels[i] < self.waterThresholds[i] then
+      if self.controllers[sTier(i)].enable and self.waterLevels[i] < self.waterThresholds[i] then
         if winningTier == -1 or self.waterLevels[i] < self.waterLevels[winningTier] or self.waterLevels[i] < self.minQty then
           winningTier = i
 
@@ -148,8 +153,17 @@ function QuantityController:updateControllerEnablement()
     end
 
     if winningTier ~= -1 then
-      self.controllers[tier(winningTier)].controller:setEnabled(true)
+      self.isTierActive[iTier(winningTier)] = true
     end
+  end
+
+  -- Apply Active Tiers (Defensively to avoid a race condition)
+  for i = 1,8 do
+    self.controllers[sTier(i)].controller:setEnabled(false)
+  end
+
+  for i = 1,8 do
+    self.controllers[sTier(i)].controller:setEnabled(self.isTierActive[iTier(i)])
   end
 end
 

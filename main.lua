@@ -33,7 +33,7 @@ local mainTemplate = {
   },
   lines = {
     "Line State: $lineState$ | (Q)uit (Up)/(Down) Arrow",
-    "T_: Quantity /   Requested | (Success %) - State",
+    "T_: Quantity /   Requested | (Success %) - State (* QC en)",
     "T1: $t1waterLevel$ | ($t1success$) - $t1state$",
     "T2: $t2waterLevel$ | ($t2success$) - $t2state$",
     "T3: $t3waterLevel$ | ($t3success$) - $t3state$",
@@ -42,7 +42,7 @@ local mainTemplate = {
     "T6: $t6waterLevel$ | ($t6success$) - $t6state$",
     "T7: $t7waterLevel$ | ($t7success$) - $t7state$",
     "T8: $t8waterLevel$ | ($t8success$) - $t8state$",
-    "BM: $stabilizedBaryonicMatterLevel$",
+    "BM: $stabilizedBaryonicMatterLevel$ | QC mode: $quantityControllerMode$",
     "",
     "#logsScrollList#",
     "#logsScrollList#",
@@ -121,14 +121,14 @@ end
 local function guiLoop()
   gui:render({
     lineState = config.lineController:getState(),
-    t1state = controllerStates["t1"],
-    t2state = controllerStates["t2"],
-    t3state = controllerStates["t3"],
-    t4state = controllerStates["t4"],
-    t5state = controllerStates["t5"],
-    t6state = controllerStates["t6"],
-    t7state = controllerStates["t7"],
-    t8state = controllerStates["t8"],
+    t1state = (config.quantityController.isTierActive[1] and "* " or "  ")..controllerStates["t1"],
+    t2state = (config.quantityController.isTierActive[2] and "* " or "  ")..controllerStates["t2"],
+    t3state = (config.quantityController.isTierActive[3] and "* " or "  ")..controllerStates["t3"],
+    t4state = (config.quantityController.isTierActive[4] and "* " or "  ")..controllerStates["t4"],
+    t5state = (config.quantityController.isTierActive[5] and "* " or "  ")..controllerStates["t5"],
+    t6state = (config.quantityController.isTierActive[6] and "* " or "  ")..controllerStates["t6"],
+    t7state = (config.quantityController.isTierActive[7] and "* " or "  ")..controllerStates["t7"],
+    t8state = (config.quantityController.isTierActive[8] and "* " or "  ")..controllerStates["t8"],
     t1success = string.format("%3d", controllerSuccesses["t1"]),
     t2success = string.format("%3d", controllerSuccesses["t2"]),
     t3success = string.format("%3d", controllerSuccesses["t3"]),
@@ -146,7 +146,7 @@ local function guiLoop()
     t7waterLevel = string.format("%8d / %8d kL", math.floor(config.quantityController.waterLevels[7]/1000), math.floor(config.quantityController.waterThresholds[7]/1000)),
     t8waterLevel = string.format("%8d / %8d kL", math.floor(config.quantityController.waterLevels[8]/1000), math.floor(config.quantityController.waterThresholds[8]/1000)),
     stabilizedBaryonicMatterLevel = string.format("%8d / %8d kL", math.floor(config.quantityController.waterLevels[9]/1000), math.floor(config.quantityController.waterThresholds[9]/1000)),
-
+    quantityControllerMode = config.quantityController.controlMode,
     logs = config.logger.handlers[3]["logs"].list
   })
 end
